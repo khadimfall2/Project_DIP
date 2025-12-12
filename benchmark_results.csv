@@ -1,0 +1,4 @@
+Timestamp,Phase,Write Throughput (ops/sec),Read Latency (ms),Compression (%)
+2025-12-12T02:10:02.253381,Phase 1,2985.83,20.0123,0.00
+2025-12-12T02:10:02.254394,Phase 2,2618.62,0.0438,0.00
+2025-12-12T02:10:02.254394,Phase 3,2567.32,0.0480,50.00

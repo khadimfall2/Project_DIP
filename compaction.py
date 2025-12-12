@@ -48,7 +48,21 @@ class DatabaseCompaction:
             f.seek(offset)
             line = f.readline()
             k, v = line.strip().split(',', 1)
+            if v == "__TOMBSTONE__":
+                return None
             return v
+            
+        
+    def get_file_size(self):
+        """Returns the current file size in bytes."""
+        return os.path.getsize(self.filename)
+
+    def db_delete(self, key):
+        """Mark a key as deleted using a tombstone."""
+        with open(self.filename, 'a') as f:
+            offset = f.tell()
+            f.write(f"{key},__TOMBSTONE__\n")
+            self.index[key] = offset
 
     # --- PHASE 3 NEW FEATURE: Compaction ---
     def compact(self):
@@ -70,9 +84,11 @@ class DatabaseCompaction:
                     # Jump directly to the correct line in the old file
                     f_old.seek(offset)
                     line = f_old.readline()
-                    
-                    # Record position in the NEW file
-                    new_offset = f_new.tell()
+                    k, v = line.strip().split(',', 1)
+                    if v == "__TOMBSTONE__":
+                        # Skip tombstoned keys
+                        # Record position in the NEW file
+                        new_offset = f_new.tell()
                     
                     # Write line to the new file
                     f_new.write(line)
