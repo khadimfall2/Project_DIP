@@ -85,10 +85,13 @@ class DatabaseCompaction:
                     f_old.seek(offset)
                     line = f_old.readline()
                     k, v = line.strip().split(',', 1)
+                    
                     if v == "__TOMBSTONE__":
-                        # Skip tombstoned keys
-                        # Record position in the NEW file
-                        new_offset = f_new.tell()
+                        # Skip tombstoned keys - don't write them
+                        continue
+                    
+                    # Record position in the NEW file BEFORE writing
+                    new_offset = f_new.tell()
                     
                     # Write line to the new file
                     f_new.write(line)
